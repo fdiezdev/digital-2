@@ -5,7 +5,9 @@
 // El oscilador es de 4 MHz
 
 ORG 0x00
-CONT EQU 0x20   	; contador
+CONT1 EQU 0x20  ; contador externo
+CONT2 EQU 0x21	; contador intermedio
+CONT3 EQU 0x22	; contador interno
 
 GOTO START
 
@@ -77,5 +79,35 @@ parpadear_leds:
 	; reinicio el ciclo
 	GOTO prender_leds
 
+PAUSA:
+	CLRF PORTD	; apagamos todos los LEDs
+	CALL DELAY_1S
+	CALL DELAY_1S
+	CALL DELAY_1S
+
+	GOTO LOOP
+
+; Retardo de 1s
 DELAY_1S:
-	
+	MOVLW 0x04	; muevo 04 decimal a W
+	MOVWF CONT1	; muevo W al contador 1
+	; el ciclo se repetirá 4 veces
+
+	LOOP1:
+		MOVLW 0xFA	; muevo 250 a W
+		MOVWF CONT2	; paso el contenido de W al contador intermedio
+		
+	LOOP2:
+		MOLVW 0xFA	; muevo 250 a W
+		MOVWF CONT3	; paso el contenido de W al contador interno
+	LOOP3:
+		NOP 		; ocupa 1 instrucción
+		DECFSZ CONT3,1	; decrementa 1 al contador, si es cero salta a la siguiente
+		GOTO LOOP3	; accede solo en caso de que CONT3 != 0
+		
+		DECFSZ CONT2,1	; decrementa 1 al contador, si es cero salta a la siguiente
+		GOTO LOOP2	; accede solo en caso de que CONT2 != 0
+
+		DECFSZ CONT1,1	; decrementa 1 al contador, si es cero salta a la siguiente
+		GOTO LOOP1	; accede solo en caso de que CONT1 != 0
+	RETURN
