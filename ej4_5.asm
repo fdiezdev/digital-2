@@ -5,9 +5,9 @@
 // El oscilador es de 4 MHz
 
 ORG 0x00
-GOTO START
+CONT EQU 0x20   	; contador
 
-CONT EQU 0x20   ; contador
+GOTO START
 
 START:
         ; CONFIGURACIÓN DE PUERTOS
@@ -40,13 +40,42 @@ START:
         ; vuelvo al banco 0 
         BCF STATUS, RP0
 
-// Tengo que hacer 2 delays:
-// 1. Delay de 2s (0.5 Hz) --> constante
-// 2. Delay de 3s 	   --> cuando apreto RB0
-
 LOOP:
 	; ---------------------
 	; CICLO PRINCIPAL
 	; ---------------------
 
-	; verificamos si alguno de los
+	; verificamos cual de los dos pulsadores fue apretado
+	; para ejecutar el delay correspondiente
+	
+	BTFSS PORTA,4	; revisamos el estado del pin 4 del puerto A
+			; RA4 == 1 --> no fue apretado (SKIP)
+			; RA4 == 0 --> si fue apretado
+	GOTO parpadear_leds
+
+	GOTO LOOP	; REINICIO EL CICLO
+
+parpadear_leds:
+	; verifico si RB0 fue apretado
+	BTFSS PORTB,0
+	GOTO pausa_3s
+
+	; prendo LEDs
+	MOVLW 0xFF
+	MOVWF PORTD
+	CALL DELAY_1S
+
+	; verifico de nuevo si se apretó RB0
+	BTFSS PORTB,0
+	GOTO pausa_3s
+
+	; apago LEDs
+	MOVLW 0x00
+	MOVWF PORTD
+	CALL DELAY_1S
+
+	; reinicio el ciclo
+	GOTO prender_leds
+
+DELAY_1S:
+	
