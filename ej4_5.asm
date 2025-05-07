@@ -12,7 +12,9 @@ CONT3 EQU 0x22	; contador interno
 GOTO START
 
 START:
+	; ==========================
         ; CONFIGURACIÓN DE PUERTOS
+	; ==========================
 
         ; el puerto RA4 ya está configurado como digital y como puerto de entrada
         ; configuramos el RB0 como puerto digital (por defecto ya está configurado como puerto de entrada)
@@ -43,9 +45,9 @@ START:
         BCF STATUS, RP0
 
 LOOP:
-	; ---------------------
+	; ====================
 	; CICLO PRINCIPAL
-	; ---------------------
+	; ====================
 
 	; verificamos cual de los dos pulsadores fue apretado
 	; para ejecutar el delay correspondiente
