@@ -46,10 +46,13 @@ ISR:
 	BTFSS INTCON,INTF	; chequeamos el estado de la bandera de interrupción externa
 	RETFIE			; significa que no ocurrió la interrupción
 	
+	MOVLW 0x03	; movemos 3 decimal al contador
+	MOVWF CONTADOR
+	
 	// tiramos la magia --> ocurrió la interrupción
-	MOVLW D'2'
-	SUBWF CONTADOR
-	; reivsamos el flag
+	
+	DECFSZ CONTADOR
+	
 	BTFSS STATUS, Z
 	INCF CONTADOR
 	BTFSC STATUS, Z
